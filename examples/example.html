@@ -1,0 +1,110 @@
+<style>
+  body {
+    font-family: 'Helvetica';
+  }
+  .note {
+    position: relative;
+    width: 300px;
+    height: 100px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 3px;
+  }
+  .note-wrapper {
+    position: relative;
+    width: 300px;
+    height: 100px;
+    padding: 0;
+  }
+  .note textarea, .note .note-html {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica';
+    font-size: 14px;
+    color: #000;
+  }
+  .note textarea {
+    position: relative;
+    outline: none;
+    background-color: transparent;
+    resize: none;
+    color: transparent;
+  }
+  .note button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .note .note-html {
+    cursor: text;
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .note-editable {
+    border-color: #999;
+  }
+  .note-editable textarea {
+    z-index: 1;
+    color: #000;
+  }
+  .note .note-html a {
+    cursor: pointer;
+    outline: none;
+    color: #0000ff;
+    font-weight: normal;
+    text-decoration: none;
+  }
+  .note-editable .note-html {
+    color: transparent;
+  }
+  .note-editable .note-html a {
+    color: transparent;
+    border-bottom: 1px solid blue;
+  }
+</style>
+
+
+<div class="note">
+  <div class="note-wrapper">
+    <textarea class="note-plain" spellcheck="false" role="textbox" aria-multiline="true" dir="ltr"></textarea>
+    <div class="note-html"></div>
+  </div>
+</div>
+
+
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/underscore.js"></script>
+<script src="../libs/backbone.js"></script>
+<script src="../backbone-typeahead.js"></script>
+
+<script>
+
+// start
+
+var noteTree = [
+  { type: "text", text: "Hey " },
+  { type: "user", text: "max", value: 12 },
+  { type: "text", text: ", could you fix that bug " },
+  { type: "date", text: "tomorrow", value: "2013-11-30" },
+  { type: "text", text: " " },
+  { type: "time", text: "before 3pm", value: "15:00" },
+  { type: "text", text: "?"}
+];
+
+var note = new Note(noteTree);
+
+var noteView = new NoteView({
+  el: $('.note'),
+  note: note
+});
+
+noteView.render();
+
+</script>
