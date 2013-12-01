@@ -73,7 +73,7 @@ var Note = Backbone.Collection.extend({
   cleanUpTree: function () {
     var prev = null;
     this.each(function (phrase) {
-
+      // TODO
     });
   },
 
@@ -144,8 +144,6 @@ var NoteView = Backbone.View.extend({
     if (e.keyCode === 8 && start === end) {
       start = Math.max(start-1, 0);
     }
-
-    // console.log(e.keyCode);
 
     if (_.contains([9, 37,38,39,40], e.keyCode)) {
       return;
