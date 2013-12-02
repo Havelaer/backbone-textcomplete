@@ -22,7 +22,7 @@ var Note = Backbone.Collection.extend({
   model: Phrase,
 
   addChars: function (start, chars) {
-    if (!chars) return;
+    if (!chars) return this;
     this.find(function (phrase) {
       var text = phrase.get('text');
       var l = text.length;
@@ -47,7 +47,7 @@ var Note = Backbone.Collection.extend({
   },
 
   removeChars: function (start, length) {
-    if (!length) return;
+    if (!length) return this;
     this.find(function (phrase) {
       var text = phrase.get('text');
       var textNew;
@@ -72,9 +72,17 @@ var Note = Backbone.Collection.extend({
 
   cleanUpTree: function () {
     var prev = null;
+    var garbage = [];
     this.each(function (phrase) {
-      // TODO
+      if (prev && prev.get('type') === 'text' && phrase.get('type') === 'text') {
+        prev.set('text', prev.get('text') + phrase.get('text'));
+        garbage.push(phrase);
+      } else {
+        prev = phrase;
+      }
     });
+    this.remove(garbage);
+    return this;
   },
 
   getTime: function () {
@@ -113,8 +121,11 @@ var NoteView = Backbone.View.extend({
     'blur textarea': 'onBlur'
   },
 
+  searchLength: 3,
+
   initialize: function (options) {
-    this.note = options.note;
+    this.note = options.note || new Note();
+    this.endpoints = options.endpoints;
   },
 
   render: function () {
@@ -158,6 +169,7 @@ var NoteView = Backbone.View.extend({
       self.note.removeChars(start, length + (textBefore.length - textAfter.length));
       var chars = textAfter.substr(start, textAfter.length - textBefore.length);
       self.note.addChars(start, chars);
+      self.note.cleanUpTree();
       self.updateHtml();
     });
   },

@@ -63,6 +63,7 @@
   }
   .note-editable .note-html {
     color: transparent;
+    color: #ddd;
   }
   .note-editable .note-html a {
     color: transparent;
@@ -98,13 +99,19 @@ var noteTree = [
   { type: "text", text: "?"}
 ];
 
+var users = new Backbone.Collection();
+var hashes = new Backbone.Collection();
 var note = new Note(noteTree);
 
 var noteView = new NoteView({
-  el: $('.note'),
-  note: note
+  note: note,
+  searchLength: 3,
+  endPoints: {
+    '@': users,
+    '#': hashes
+  }
 });
 
-noteView.render();
+noteView.setElement($('.note')).render();
 
 </script>
