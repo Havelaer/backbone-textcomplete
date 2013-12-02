@@ -1,3 +1,28 @@
+// String helpers
+
+String.prototype.regexIndexOf = function(regex, startpos) {
+  var indexOf = this.substring(startpos || 0).search(regex);
+  return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
+};
+
+String.prototype.regexLastIndexOf = function(regex, startpos) {
+  regex = (regex.global) ? regex : new RegExp(regex.source, "g" + (regex.ignoreCase ? "i" : "") + (regex.multiLine ? "m" : ""));
+  if(typeof (startpos) == "undefined") {
+    startpos = this.length;
+  } else if(startpos < 0) {
+    startpos = 0;
+  }
+  var stringToWorkWith = this.substring(0, startpos + 1);
+  var lastIndexOf = -1;
+  var nextStop = 0;
+  while((result = regex.exec(stringToWorkWith)) != null) {
+    lastIndexOf = result.index;
+    regex.lastIndex = ++nextStop;
+  }
+  return lastIndexOf;
+};
+
+
 // Phrase model
 
 var Phrase = Backbone.Model.extend({
@@ -15,6 +40,7 @@ var Phrase = Backbone.Model.extend({
 
 });
 
+
 // Note collection (of phrases)
 
 var Note = Backbone.Collection.extend({
@@ -23,6 +49,10 @@ var Note = Backbone.Collection.extend({
 
   addChars: function (start, chars) {
     if (!chars) return this;
+    if (this.length === 0) {
+      this.add({ 'text': chars });
+      return this;
+    }
     this.find(function (phrase) {
       var text = phrase.get('text');
       var l = text.length;
@@ -111,6 +141,9 @@ var Note = Backbone.Collection.extend({
 
 });
 
+
+// NoteView
+
 var NoteView = Backbone.View.extend({
 
   events: {
@@ -121,11 +154,13 @@ var NoteView = Backbone.View.extend({
     'blur textarea': 'onBlur'
   },
 
-  searchLength: 3,
+  endPoints: {},
+
+  searchLength: 2,
 
   initialize: function (options) {
     this.note = options.note || new Note();
-    this.endpoints = options.endpoints;
+    this.endPoints = options.endPoints;
   },
 
   render: function () {
@@ -171,6 +206,7 @@ var NoteView = Backbone.View.extend({
       self.note.addChars(start, chars);
       self.note.cleanUpTree();
       self.updateHtml();
+      self.parseAtCaret(e);
     });
   },
 
@@ -180,6 +216,27 @@ var NoteView = Backbone.View.extend({
 
   onBlur: function (e) {
     this.disableEdit();
+  },
+
+  parseAtCaret: function (e) {
+    var $textarea = $(e.target);
+    var text = $textarea.val();
+    var start = $textarea[0].selectionStart;
+    var end = $textarea[0].selectionEnd;
+    var li = text.regexLastIndexOf(/\s/, start-1);
+    var ri = text.regexIndexOf(/\s/, end);
+    ri = ri === -1 ? start : ri;
+    var word = text.substring(li+1, ri);
+    this.parseCurrentWord(word);
+  },
+
+  parseCurrentWord: function (word) {
+    var symbol = word.substr(0, 1);
+    word = word.substr(1);
+    if (word.length >= this.searchLength && symbol in this.endPoints) {
+      this.filtered = this.endPoints[symbol].fetch({ data: { query: word }});
+      console.log(this.filtered);
+    }
   },
 
   onClickText: function (e) {
