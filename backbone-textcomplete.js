@@ -150,6 +150,7 @@ var NoteView = Backbone.View.extend({
     'click a': 'onClickLink',
     'click .note-html': 'onClickText',
     'keydown textarea': 'onType',
+    'dblclick textarea': 'onWordSelect',
     'focus textarea': 'onFocus',
     'blur textarea': 'onBlur'
   },
@@ -172,6 +173,10 @@ var NoteView = Backbone.View.extend({
     this.$('.note-html').html(this.note.toHTML());
   },
 
+  onWordSelect: function () {
+    this.wordSelected = true;
+  },
+
   onType: function (e) {
     var self = this;
     var $textarea = $(e.target);
@@ -180,15 +185,21 @@ var NoteView = Backbone.View.extend({
     var end = $textarea[0].selectionEnd;
     var length = 0;
 
-    if (e.keyCode === 27) {
-      $textarea.blur();
-      return;
-    }
-
     selectedText = textBefore.substring(start, end);
 
     if (e.keyCode === 8 && start === end) {
       start = Math.max(start-1, 0);
+    }
+
+    if (e.keyCode === 8 && this.wordSelected) {
+      end += 1;
+    }
+
+    this.wordSelected = false;
+
+    if (e.keyCode === 27) {
+      $textarea.blur();
+      return;
     }
 
     if (_.contains([9, 37,38,39,40], e.keyCode)) {
