@@ -207,7 +207,7 @@ var NoteView = Backbone.View.extend({
 
     setTimeout(function () {
       var textAfter = $textarea.val();
-      self.note.removeChars(start, length + (textBefore.length - textAfter.length));
+      self.note.removeChars(start, length);
       var chars = textAfter.substr(start, textAfter.length - textBefore.length);
       self.note.addChars(start, chars);
       self.note.cleanUpTree();
