@@ -195,6 +195,12 @@ var NoteView = Backbone.View.extend({
       return;
     }
 
+    if (this.typing) {
+      e.preventDefault();
+      return true;
+    }
+    this.typing = true;
+
     length = end - start;
 
     textBefore = textBefore.substr(0, start) + textBefore.substr(start + length);
@@ -207,6 +213,8 @@ var NoteView = Backbone.View.extend({
       self.note.cleanUpTree();
       self.updateHtml();
       self.parseAtCaret(e);
+
+      self.typing = false;
     });
   },
 
