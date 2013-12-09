@@ -161,6 +161,7 @@ var NoteView = Backbone.View.extend({
 
   initialize: function (options) {
     this.note = options.note || new Note();
+    this.suggestions = options.suggestions || new Backbone.Collection();
     this.endPoints = options.endPoints;
   },
 
@@ -224,7 +225,6 @@ var NoteView = Backbone.View.extend({
       self.note.cleanUpTree();
       self.updateHtml();
       self.parseAtCaret(e);
-
       self.typing = false;
     });
   },
@@ -254,7 +254,12 @@ var NoteView = Backbone.View.extend({
     word = word.substr(1);
     if (word.length >= this.searchLength && symbol in this.endPoints) {
       this.filtered = this.endPoints[symbol].fetch({ data: { query: word }});
-      console.log(this.filtered);
+      if (this.filtered.length > 0) {
+        this.filtered[0].trigger('select');
+      }
+      this.suggestions.reset(this.filtered);
+    } else {
+      this.suggestions.reset();
     }
   },
 

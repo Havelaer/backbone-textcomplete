@@ -69,6 +69,23 @@
     color: transparent;
     border-bottom: 1px solid blue;
   }
+  .suggestions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 3px;
+  }
+  .suggestions li {
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+    border-top: 1px solid #ccc;
+  }
+  .suggestions li:first-child {
+    border-top: 0;
+  }
 </style>
 
 
@@ -77,6 +94,7 @@
     <textarea class="note-plain" spellcheck="false" role="textbox" aria-multiline="true" dir="ltr"></textarea>
     <div class="note-html"></div>
   </div>
+  <ul class="suggestions"></ul>
 </div>
 
 
@@ -84,68 +102,5 @@
 <script src="../libs/underscore.js"></script>
 <script src="../libs/backbone.js"></script>
 <script src="../backbone-textcomplete.js"></script>
-
-<script>
-
-// start
-
-var noteTree = [
-  { type: "text", text: "Hey " },
-  { type: "user", text: "max", value: 12 },
-  { type: "text", text: ", could you fix that bug " },
-  { type: "date", text: "tomorrow", value: "2013-11-30" },
-  { type: "text", text: " before " },
-  { type: "time", text: "3pm", value: "15:00" },
-  { type: "text", text: "?"}
-];
-
-var Users = Backbone.Collection.extend({
-
-  fetch: function (options) {
-    var q = options.data.query;
-    var pattern = new RegExp('^' + q);
-    return this.filter(function (item) {
-      return pattern.test(item.get('firstname')) || pattern.test(item.get('lastname'));
-    });
-  }
-
-});
-
-var Dossiers = Backbone.Collection.extend({
-
-  fetch: function (options) {
-    var q = options.data.query;
-    var pattern = new RegExp('^' + q);
-    return this.filter(function (item) {
-      return pattern.test(item.get('name'));
-    });
-  }
-
-});
-
-var users = new Users([
-  { firstname: 'clark', lastname: 'kent' },
-  { firstname: 'bruce', lastname: 'lee' },
-  { firstname: 'bruce', lastname: 'willis' },
-  { firstname: 'bruce', lastname: 'wayne' }
-]);
-
-var dossiers = new Dossiers([
-  { name: 'hero' },
-  { name: 'actor' }
-]);
-
-var note = new Note(noteTree);
-
-var noteView = new NoteView({
-  // note: note,
-  searchLength: 3,
-  endPoints: {
-    '@': users,
-    '#': dossiers
-  }
-});
-
-noteView.setElement($('.note')).render();
-
-</script>
+<script src="CollectionView.js"></script>
+<script src="example.js"></script>
