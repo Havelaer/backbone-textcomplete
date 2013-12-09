@@ -1,6 +1,6 @@
-backbone-typeahead
+backbone-textcomplete
 ==================
 
-Textarea typeahead
+Textarea textcomplete
 
-In progress
+In progress...
